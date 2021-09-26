@@ -1,16 +1,36 @@
 from  bs4 import BeautifulSoup
 import requests
 import time
-
+import os
 
 def find_recipes():
     site = 'https://akispetretzikis.com'
-    first_ing = 'eggs'
-    second_ing = 'bread'
-    third_ing = 'ham'
+
+    # create new directory for the results
+    parent_dir = os.path.dirname(os.path.abspath("top_level_file.txt"))
+    # Directory
+    directory = "Matched Recipes"
+
+    # Path
+    path = os.path.join(parent_dir, directory)
+    os.mkdir(path)
+
+    print("Search the website: akispetretzikis.com ")
+    print("Insert up to 3 ingredients to filter all the recipes")
+
+
+    first_ing=''
+    second_ing=''
+    while(first_ing == ''):
+        first_ing= input("Give the main ingredient\n>")
+    while( second_ing == ''):
+        second_ing = input('Give a second ingredient\n>')
+    third_ing = input('Give a third ingredient if you want\n>')
+
 
     search = '&search=' + first_ing
     page_counter = 1
+
 
 
     url='https://akispetretzikis.com/en/search?from=admin' + '&page=' +str(page_counter)+ search+'&utf8=%E2%9C%93'
@@ -25,7 +45,7 @@ def find_recipes():
         print('NO RESULTS FOR THE MAIN INGREDIENT')
 
     while (show_more_button is not None):
-
+        print("searching...")
         texts = soup.find_all('div', class_='texts')
         for i in texts:
 
@@ -37,40 +57,38 @@ def find_recipes():
             ingredients = recipe_soup.find('div', class_='text ingredients-list')
             # check if other ingrediens are in the same recipe
             if (((second_ing and third_ing) in str(ingredients)) is True):
-                print('MATCH')
 
                 # Recipe url
-                print(recipe_url)
 
                 # for the Recipe Name
                 recipe_name = i.find('h4').text
-                print(recipe_name)
 
                 # Time till we feast
                 hands_on_time = recipe_soup.find('ul', class_='new-times').find('h5').text
-                print(hands_on_time)
 
                 # print ingredients
                 ing_li = ingredients.find_all(['li', 'p'])
-                for i in ing_li:
-                    print(i.text)
+
 
                 # for the recipe method
                 method_box = recipe_soup.find('div', class_='method')
                 method_list = method_box.find_all('li')
 
-                for m in method_list:
-                    print(m.text)
+
 
                 # select directory
 
-                with open(f'recipe_results/{recipe_name}.txt', 'w',encoding='utf-8') as f:
-                    f.write(recipe_url+'\n')
+
+
+                with open(f'Matched Recipes/{recipe_name}.txt', 'w',encoding='utf-8') as f:
+                    f.write('Recipe link\t'+recipe_url+'\n')
                     f.write(recipe_name+'\n')
-                    f.write(hands_on_time+'\n')
+                    f.write('Hands on Time:\t'+hands_on_time+'\n')
+                    f.write('Ingredients\n')
                     for i in ing_li:
                         f.write(i.text+'\n')
                     #f.write('\n')
+                    f.write('Ingredients\n')
                     for m in method_list:
                         f.write(m.text+'\n')
 
@@ -93,5 +111,8 @@ def find_recipes():
 
 
 if __name__  ==  '__main__':
-    while True:
-        find_recipes()
+
+
+
+    find_recipes()
+    print("Search completed\nOpen Matched Recipes directory to view them")
