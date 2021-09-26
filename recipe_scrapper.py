@@ -116,3 +116,4 @@ if __name__  ==  '__main__':
 
     find_recipes()
     print("Search completed\nOpen Matched Recipes directory to view them")
+    print("Goodbye!")
